@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/v1/app/instructor")
 public class InstructorController {
-    private InstructorService instructorService;
+    private final InstructorService instructorService;
 
     // Constructor Injection
     public InstructorController(InstructorService instructorService) {
@@ -39,6 +39,7 @@ public class InstructorController {
             return ResponseEntity.status(404).body(ApiResponse.error(e.getMessage()));
         }
     }
+
     @GetMapping("/details-with-active-courses")
     public ResponseEntity<ApiResponse<List<InstructorDetailResponse>>> getInstructorsWithFilteredCourses() {
         try {
@@ -50,21 +51,21 @@ public class InstructorController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Instructor>> createInstructor(@RequestBody Instructor instructor) {
+    public ResponseEntity<ApiResponse<Void>> createInstructor(@RequestBody Instructor instructor) {
         try {
-            Instructor created = instructorService.createInstructor(instructor);
+            instructorService.createInstructor(instructor);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ApiResponse<>(true, "Đã truy xuất thành công", created));
+                    .body(new ApiResponse<>(true, "Tạo giảng viên thành công", null));
         } catch (RuntimeException e) {
             return ResponseEntity.status(400).body(ApiResponse.error(e.getMessage()));
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Instructor>> updateInstructor(@PathVariable long id, @RequestBody Instructor instructor) {
+    public ResponseEntity<ApiResponse<Void>> updateInstructor(@PathVariable long id, @RequestBody Instructor instructor) {
         try {
-            Instructor updated = instructorService.updateInstructor(id, instructor);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhập ok", updated));
+            instructorService.updateInstructor(id, instructor);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhật giảng viên thành công", null));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(ApiResponse.error(e.getMessage()));
         }
