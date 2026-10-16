@@ -2,8 +2,8 @@ package com.example.lecturer_demo.controllers;
 
 import com.example.lecturer_demo.dto.ApiResponse;
 import com.example.lecturer_demo.dto.CourseCreateRequest;
+import com.example.lecturer_demo.dto.CourseResponse;
 import com.example.lecturer_demo.dto.CourseUpdateRequest;
-import com.example.lecturer_demo.models.Course;
 import com.example.lecturer_demo.services.CourseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,21 +21,24 @@ public class CourseController {
         this.courseService = courseService;
     }
 
+    // Sử dụng List<CourseResponse> thay vì List<Course>
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Course>>> getAllCourses() {
+    public ResponseEntity<ApiResponse<List<CourseResponse>>> getAllCourses() {
         try {
-            List<Course> courses = courseService.getAllCourses();
+            List<CourseResponse> courses = courseService.getAllCourses();
             return ResponseEntity.ok(new ApiResponse<>(true, "Đã truy xuất thành công", courses));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(ApiResponse.error(e.getMessage()));
         }
     }
 
+    // Sử dụng CourseResponse thay vì Course
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Course>> getCourseById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<CourseResponse>> getCourseById(@PathVariable Long id) {
         try {
+            CourseResponse course = courseService.getCourseResponseById(id);
             return ResponseEntity.ok(
-                    new ApiResponse<>(true, "Đã truy xuất thành công", courseService.getCourseById(id))
+                    new ApiResponse<>(true, "Đã truy xuất thành công", course)
             );
         } catch (RuntimeException e) {
             return ResponseEntity.status(404)
@@ -58,7 +61,7 @@ public class CourseController {
     public ResponseEntity<ApiResponse<Void>> updateCourse(@PathVariable Long id, @RequestBody CourseUpdateRequest request) {
         try {
             courseService.updateCourse(id, request);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhập thành công", null));
+            return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhật thành công", null));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(ApiResponse.error(e.getMessage()));
         }
